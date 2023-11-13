@@ -7,14 +7,11 @@ from dotenv import load_dotenv
 
 from original import tts_type
 
-load_dotenv()
-
-error_handler_func = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
 
 from datetime import datetime
 from pathlib import Path
 
-import pyttsx3
+# import pyttsx3
 import speech_recognition as sr
 import wikipedia
 import wolframalpha
@@ -22,11 +19,12 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Google TTS
-import google.cloud.texttospeech as tts
 import pygame
 import time
 
 load_dotenv()
+error_handler_func = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
+
 
 # error_handler_func = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
 
@@ -51,21 +49,23 @@ wolfram_client = wolframalpha.Client(app_id)
 client = OpenAI()
 
 
-def google_tts(voice_name: str, text: str):
-    language_code = "-".join(voice_name.split("-")[:2])
-    text_input = tts.SynthesisInput(text=text)
-    voice_params = tts.VoiceSelectionParams(language_code=language_code, name=voice_name)
-    audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.LINEAR16)
-
-    client = tts.TextToSpeechClient()
-    response = client.synthesize_speech(
-        input=text_input, voice=voice_params, audio_config=audio_config
-    )
-
-    return response.audio_content
+# def google_tts(voice_name: str, text: str):
+#     language_code = "-".join(voice_name.split("-")[:2])
+#     text_input = tts.SynthesisInput(text=text)
+#     voice_params = tts.VoiceSelectionParams(language_code=language_code, name=voice_name)
+#     audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.LINEAR16)
+#
+#     client = tts.TextToSpeechClient()
+#     response = client.synthesize_speech(
+#         input=text_input, voice=voice_params, audio_config=audio_config
+#     )
+#
+#     return response.audio_content
 
 
 def gaia_foundation():
+    speak("Welcome Sir")
+
     while True:
         query = get_command().lower().split()
         if query[0] == activation_word and len(query) > 1:
@@ -101,9 +101,9 @@ def gaia_foundation():
                 speak("Computing")
                 try:
                     result = search_wolframalpha(query)
-                    pyttsx3.speak(result)
+                    speak(result)
                 except:
-                    pyttsx3.speak("Unable to compute")
+                    speak("Unable to compute")
 
             if query[0] == "log":
                 take_notes()
@@ -184,7 +184,7 @@ def list_or_dict(var):
 def take_notes():
     speak("Ready to record note")
     new_note = get_command().lower()
-    now = datetime.now().strftime('%H-%M-%S-%Y-%m-%d')
+    now = datetime.now().strftime('%H-%M-%S-%d-%m-%Y')
     with open("note_%s.txt" % now, "w") as new_file:
         new_file.write(new_note)
     speak("Note written")
@@ -228,5 +228,4 @@ def query_openai(prompt=""):
 
 
 if __name__ == "__main__":
-    speak("Welcome Sir")
     gaia_foundation()
