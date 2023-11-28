@@ -1,16 +1,13 @@
 import math
+import time
 import webbrowser
 # Mute ALSA errors
 from ctypes import *
-
-from dotenv import load_dotenv
-
-from original import tts_type
-
-
 from datetime import datetime
 from pathlib import Path
 
+# Google TTS
+import pygame
 # import pyttsx3
 import speech_recognition as sr
 import wikipedia
@@ -18,9 +15,7 @@ import wolframalpha
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# Google TTS
-import pygame
-import time
+# from original import tts_type
 
 load_dotenv()
 error_handler_func = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
@@ -131,11 +126,11 @@ def speak(text, rate=120):
         pygame.mixer.quit()
 
     except KeyboardInterrupt:
-        try:
-            if tts_type == 'google' or tts_type == 'openai':
-                pygame.mixer.quit()
-        except:
-            pass
+        # try:
+        #     if tts_type == 'google' or tts_type == 'openai':
+        #         pygame.mixer.quit()
+        # except:
+        #     pass
         return
 
 

@@ -1,18 +1,26 @@
-import os
+import requests
 
-from dotenv import load_dotenv
+CHUNK_SIZE = 1024
+url = "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM"
 
-load_dotenv()
-from pathlib import Path
-from openai import OpenAI
-api_key=os.getenv("OPENAI_API_KEY")
-client = OpenAI()
+headers = {
+  "Accept": "audio/mpeg",
+  "Content-Type": "application/json",
+  "xi-api-key": "2f694cfa28c127dd607981269fa73b01"
+}
 
-speech_file_path = Path(__file__).parent / "speech.mp3"
-response = client.audio.speech.create(
-  model="tts-1",
-  voice="alloy",
-  input="Today is a wonderful day to build something people love!"
-)
+data = {
+  "text": "Born and raised in the charming south, I can add a touch of sweet southern hospitality to your audiobooks "
+          "and podcasts",
+  "model_id": "eleven_monolingual_v1",
+  "voice_settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.5
+  }
+}
 
-response.stream_to_file(speech_file_path)
+response = requests.post(url, json=data, headers=headers)
+with open('output.mp3', 'wb') as f:
+    for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+        if chunk:
+            f.write(chunk)
